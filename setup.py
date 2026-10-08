@@ -6,10 +6,10 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 __version__ = "0.0.0"
 
-REPO_NAME = "Kidney-Disease-Classifications"
+REPO_NAME = "NephroScan-MLOps"
 AUTHOR_USER_NAME = "AbQaadir"
 SRC_REPO = "KDC"
-AUTHOR_EMAIL = "qaadrir.inbox@gmail.com"
+AUTHOR_EMAIL = "qaadireng@gmail.com"
 
 
 setuptools.setup(
@@ -17,7 +17,7 @@ setuptools.setup(
     version=__version__,
     author=AUTHOR_USER_NAME,
     author_email=AUTHOR_EMAIL,
-    description="Classification of Kidney Disease using Deep Learning.",
+    description="NephroScan MLOps: Deep Learning Platform for Kidney Disease Classification from CT Scans.",
     long_description=long_description,
     long_description_content="text/markdown",
     url=f"https://github.com/{AUTHOR_USER_NAME}/{REPO_NAME}",
@@ -25,5 +25,5 @@ setuptools.setup(
         "Bug Tracker": f"https://github.com/{AUTHOR_USER_NAME}/{REPO_NAME}/issues",
     },
     package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src")
+    packages=setuptools.find_packages(where="src"),
 )

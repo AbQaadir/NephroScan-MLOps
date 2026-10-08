@@ -1,6 +1,6 @@
-from KDC.config.configuration import ConfigurationManager
-from KDC.components.prepare_base_model import PrepareBaseModel
 from KDC import logger
+from KDC.components.prepare_base_model import PrepareBaseModel
+from KDC.config.configuration import ConfigurationManager
 
 STAGE_NAME = "Prepare Base Model"
 
@@ -17,10 +17,9 @@ class PrepareBaseModelTrainingPipeline:
         prepare_base_model.update_base_model()
 
 
-    
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
-        logger.info(f"Prepare Base Model Pipeline started")
+        logger.info("Prepare Base Model Pipeline started")
         logger.info(f"{STAGE_NAME} started.")
         obj = PrepareBaseModelTrainingPipeline()
         obj.main()

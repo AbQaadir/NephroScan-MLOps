@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>KDC</title>
+    <title>NephroScan MLOps | Kidney CT Classification</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<style>
 		body{background-color: #eff2f9;}
@@ -162,13 +162,12 @@ function sendRequest(base64Data){
 				success: function(res){
 					$(".res-part").html("");
 					$(".res-part2").html("");
-					try{
-						var imageData = res[1].image;
-						if(imageData.length > 100){
-							if(imageData.length > 10){$(".res-part2").append("<img class='resp-img' src='data:image/jpeg;base64," + imageData + "' alt='' />");}
-						}
-					}catch(e){}
-					$(".res-part").html("<pre>" + JSON.stringify(res[0], undefined, 2) + "</pre>");
+					var displayData = Array.isArray(res) ? res[0] : res;
+					$(".res-part").html("<pre>" + JSON.stringify(displayData, undefined, 2) + "</pre>");
+					$("#loading").hide();
+				},
+				error: function(err){
+					$(".res-part").html("<pre style='color:red;'>Error: " + (err.responseJSON ? JSON.stringify(err.responseJSON, undefined, 2) : err.statusText) + "</pre>");
 					$("#loading").hide();
 				}
 			});

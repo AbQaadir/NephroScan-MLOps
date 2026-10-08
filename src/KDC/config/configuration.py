@@ -1,14 +1,18 @@
 import os
-from KDC.constants import CONFIG_FILE_PATH, PARAMS_FILE_PATH
-from KDC.utils.common import read_yaml, create_directories, save_json
-from KDC.entity.config_entity import (DataIngestionConfig, PrepareBaseModelConfig, TrainingConfig, EvaluationConfig)
 from pathlib import Path
+
+from KDC.constants import CONFIG_FILE_PATH, PARAMS_FILE_PATH
+from KDC.entity.config_entity import (
+    DataIngestionConfig,
+    EvaluationConfig,
+    PrepareBaseModelConfig,
+    TrainingConfig,
+)
+from KDC.utils.common import create_directories, read_yaml
 
 
 class ConfigurationManager:
-    def __init__(
-        self, config_filepath=CONFIG_FILE_PATH, params_filepath=PARAMS_FILE_PATH
-    ):
+    def __init__(self, config_filepath=CONFIG_FILE_PATH, params_filepath=PARAMS_FILE_PATH):
 
         self.config = read_yaml(config_filepath)
         self.params = read_yaml(params_filepath)
@@ -28,13 +32,13 @@ class ConfigurationManager:
             unzip_dir=config.unzip_dir,
         )
         return data_ingestion_config
-    
+
     # Prepare Base Model Config
     def get_prepare_base_model_config(self) -> PrepareBaseModelConfig:
         config = self.config.prepare_base_model
-        
-        # print(config) 
-        
+
+        # print(config)
+
         create_directories([config.root_dir])
 
         prepare_base_model_config = PrepareBaseModelConfig(
@@ -45,19 +49,17 @@ class ConfigurationManager:
             params_learning_rate=self.params.LEARNING_RATE,
             params_include_top=self.params.INCLUDE_TOP,
             params_weights=self.params.WEIGHTS,
-            params_classes=self.params.CLASSES
+            params_classes=self.params.CLASSES,
         )
 
         return prepare_base_model_config
-    
+
     # Training Config
     def get_training_config(self) -> TrainingConfig:
         training = self.config.training
         prepare_base_model = self.config.prepare_base_model
         params = self.params
-        training_data = os.path.join(
-            self.config.data_ingestion.unzip_dir, "kidney-ct-scan-image"
-        )
+        training_data = os.path.join(self.config.data_ingestion.unzip_dir, "kidney-ct-scan-image")
         create_directories([Path(training.root_dir)])
 
         training_config = TrainingConfig(
@@ -72,8 +74,8 @@ class ConfigurationManager:
         )
 
         return training_config
-    
-    # Evaluation Config 
+
+    # Evaluation Config
     def get_evaluation_config(self) -> EvaluationConfig:
         eval_config = EvaluationConfig(
             path_of_model="artifacts/training/model.h5",

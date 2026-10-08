@@ -1,6 +1,6 @@
-from KDC.config.configuration import ConfigurationManager
-from KDC.components.data_ingestion import DataIngestion
 from KDC import logger
+from KDC.components.data_ingestion import DataIngestion
+from KDC.config.configuration import ConfigurationManager
 
 STAGE_NAME = "Data Ingestion step"
 
@@ -17,10 +17,9 @@ class DataIngestionTrainingPipeline:
         data_ingestion.extract_zip_file()
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
-        logger.info(f"Data Ingestion Pipeline started")
+        logger.info("Data Ingestion Pipeline started")
         logger.info(f"{STAGE_NAME} started.")
         obj = DataIngestionTrainingPipeline()
         obj.main()

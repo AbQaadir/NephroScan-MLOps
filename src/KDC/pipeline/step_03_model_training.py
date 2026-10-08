@@ -1,7 +1,6 @@
-from KDC.config.configuration import ConfigurationManager
-from KDC.components.model_training import Training
 from KDC import logger
-
+from KDC.components.model_training import Training
+from KDC.config.configuration import ConfigurationManager
 
 STAGE_NAME = "Model Training"
 
@@ -19,10 +18,9 @@ class ModelTrainingPipeline:
         training.train()
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
-        logger.info(f"Model Training Pipeline started")
+        logger.info("Model Training Pipeline started")
         logger.info(f"{STAGE_NAME} started.")
         obj = ModelTrainingPipeline()
         obj.main()
@@ -30,4 +28,3 @@ if __name__ == '__main__':
     except Exception as e:
         logger.exception(e)
         raise e
-        

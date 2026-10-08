@@ -1,6 +1,7 @@
-import os
 from pathlib import Path
+
 import tensorflow as tf
+
 from KDC.entity.config_entity import TrainingConfig
 
 
@@ -31,7 +32,7 @@ class Training:
             directory=self.config.training_data,
             subset="validation",
             shuffle=False,
-            **dataflow_kwargs
+            **dataflow_kwargs,
         )
 
         if self.config.params_is_augmentation:
@@ -42,16 +43,13 @@ class Training:
                 height_shift_range=0.2,
                 shear_range=0.2,
                 zoom_range=0.2,
-                **datagenerator_kwargs
+                **datagenerator_kwargs,
             )
         else:
             train_datagenerator = valid_datagenerator
 
         self.train_generator = train_datagenerator.flow_from_directory(
-            directory=self.config.training_data,
-            subset="training",
-            shuffle=True,
-            **dataflow_kwargs
+            directory=self.config.training_data, subset="training", shuffle=True, **dataflow_kwargs
         )
 
     # save the model for after training the model
@@ -61,12 +59,8 @@ class Training:
 
     # train the model
     def train(self):
-        self.steps_per_epoch = (
-            self.train_generator.samples // self.train_generator.batch_size
-        )
-        self.validation_steps = (
-            self.valid_generator.samples // self.valid_generator.batch_size
-        )
+        self.steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
+        self.validation_steps = self.valid_generator.samples // self.valid_generator.batch_size
 
         self.model.fit(
             self.train_generator,
