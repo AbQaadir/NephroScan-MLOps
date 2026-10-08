@@ -1,4 +1,7 @@
 services:
+  # ==========================================
+  # 1. FastAPI Serving Microservice
+  # ==========================================
   api:
     build:
       context: .
@@ -22,6 +25,9 @@ services:
     networks:
       - kdc-network
 
+  # ==========================================
+  # 2. MLflow Experiment Tracking Server
+  # ==========================================
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.10.0
     container_name: kdc-mlflow
@@ -39,6 +45,9 @@ services:
     networks:
       - kdc-network
 
+  # ==========================================
+  # 3. Prometheus Metric Scraper
+  # ==========================================
   prometheus:
     image: prom/prometheus:v2.45.0
     container_name: kdc-prometheus
@@ -52,9 +61,118 @@ services:
     networks:
       - kdc-network
 
+  # ==========================================
+  # 4. Airflow Metadata Database (PostgreSQL)
+  # ==========================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: kdc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow_password
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - kdc-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # 5. Airflow DB Migration & Admin User Init
+  # ==========================================
+  airflow-init:
+    image: apache/airflow:2.8.2-python3.10
+    container_name: kdc-airflow-init
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow_password@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    volumes:
+      - ./dags:/opt/airflow/dags
+    networks:
+      - kdc-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate
+        airflow users create \
+          --username admin \
+          --firstname Admin \
+          --lastname NephroScan \
+          --role Admin \
+          --email qaadireng@gmail.com \
+          --password admin || true
+    restart: on-failure
+
+  # ==========================================
+  # 6. Airflow Webserver (UI on :8081)
+  # ==========================================
+  airflow-webserver:
+    image: apache/airflow:2.8.2-python3.10
+    container_name: kdc-airflow-webserver
+    restart: unless-stopped
+    command: webserver
+    ports:
+      - "8081:8080"
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow_password@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      PYTHONPATH: /opt/airflow/src:/opt/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./config:/opt/airflow/config
+      - ./params.yaml:/opt/airflow/params.yaml
+      - ./artifacts:/opt/airflow/artifacts
+      - ./logs:/opt/airflow/logs
+    networks:
+      - kdc-network
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  # ==========================================
+  # 7. Airflow Scheduler Daemon
+  # ==========================================
+  airflow-scheduler:
+    image: apache/airflow:2.8.2-python3.10
+    container_name: kdc-airflow-scheduler
+    restart: unless-stopped
+    command: scheduler
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow_password@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      PYTHONPATH: /opt/airflow/src:/opt/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./config:/opt/airflow/config
+      - ./params.yaml:/opt/airflow/params.yaml
+      - ./artifacts:/opt/airflow/artifacts
+      - ./logs:/opt/airflow/logs
+    networks:
+      - kdc-network
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
 networks:
   kdc-network:
     driver: bridge
 
 volumes:
   mlflow_data:
+  postgres_data:
