@@ -2,7 +2,17 @@
 
 import base64
 import io
+import sys
+from pathlib import Path
 from unittest.mock import MagicMock, patch
+
+# Ensure root and src are on sys.path
+root_dir = str(Path(__file__).resolve().parent.parent)
+src_dir = str(Path(__file__).resolve().parent.parent / "src")
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
 
 import numpy as np
 import pytest

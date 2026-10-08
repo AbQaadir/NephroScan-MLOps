@@ -87,13 +87,13 @@ exclude = [
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
-ignore = ["E501"]
+ignore = ["E501", "E402"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-pythonpath = ["."]
+pythonpath = [".", "src"]
 addopts = "-v --strict-markers"
 filterwarnings = [
     "ignore::DeprecationWarning",

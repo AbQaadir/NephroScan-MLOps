@@ -1,8 +1,14 @@
 """FastAPI Production Application for Kidney Disease Classification."""
 
 import subprocess
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
+
+# Ensure src directory is on sys.path
+src_dir = str(Path(__file__).resolve().parent / "src")
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
 
 from fastapi import (
     BackgroundTasks,
