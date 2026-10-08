@@ -75,8 +75,8 @@ flowchart TD
 
 Using **`uv`** (recommended):
 ```bash
-git clone https://github.com/AbQaadir/MLOPS-Kidney-Disease-Classification.git
-cd MLOPS-Kidney-Disease-Classification
+git clone https://github.com/AbQaadir/NephroScan-MLOps.git
+cd NephroScan-MLOps
 
 # Create virtual environment and install all packages
 uv venv --python 3.10
